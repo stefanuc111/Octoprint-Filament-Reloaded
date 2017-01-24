@@ -100,11 +100,13 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         if script_name == "afterPrintPaused":
             postfix = ( "M117 Filament ended\n"
                         "M104 S0\n"
-                        "G1 X" + str(-self.position['x'] - self.left_offset) + "\n" )
+                        "M84 S0\n"
+                        "G0 X" + str(-self.position['x'] - self.left_offset) + "\n" )
 
         if script_name == "beforePrintResumed":
             postfix = ( "M117 Resumed\n"
-                    "G1 X" + str(self.position['x'] + self.left_offset) + "\n" )
+                    "G0 X" + str(self.position['x'] + self.left_offset) + "\n"
+                    "M84 S120\n" )
             self.position = None
 
         return prefix, postfix
@@ -128,7 +130,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.7"
+__plugin_version__ = "1.0.8"
 
 def __plugin_load__():
     global __plugin_implementation__
