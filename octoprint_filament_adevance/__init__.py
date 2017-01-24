@@ -16,7 +16,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
 
 
     def on_after_startup(self):
-        self._logger.info("Filament Sensor Reloaded started")
+        self._logger.info("Filament Sensor Adevance started")
         self.pin = int(self._settings.get(["pin"]))
         self.bounce = int(self._settings.get(["bounce"]))
         self.switch = int(self._settings.get(["switch"]))
@@ -105,21 +105,21 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
     def get_update_information(self):
         return dict(
             octoprint_filament=dict(
-                displayName="Filament Sensor Reloaded",
+                displayName="Filament Sensor Adevance",
                 displayVersion=self._plugin_version,
 
                 # version check: github repository
                 type="github_release",
-                user="kontakt",
+                user="stefanuc111",
                 repo="Octoprint-Filament-Reloaded",
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/kontakt/Octoprint-Filament-Reloaded/archive/{target_version}.zip"
+                pip="https://github.com/stefanuc111/Octoprint-Filament-Reloaded/archive/{target_version}.zip"
             )
         )
 
-__plugin_name__ = "Filament Sensor Reloaded"
+__plugin_name__ = "Filament Sensor Adevance"
 __plugin_version__ = "1.0.1"
 
 def __plugin_load__():

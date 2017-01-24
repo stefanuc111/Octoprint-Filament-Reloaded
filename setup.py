@@ -4,14 +4,14 @@
 ### Do not forget to adjust the following variables to your own plugin.
 
 # The plugin's identifier, has to be unique
-plugin_identifier = "filamentreload"
+plugin_identifier = "filament_adevance"
 
 # The plugin's python package, should be "octoprint_<plugin identifier>", has to be unique
-plugin_package = "octoprint_filamentreload"
+plugin_package = "octoprint_filament_adevance"
 
 # The plugin's human readable name. Can be overwritten within OctoPrint's internal data via __plugin_name__ in the
 # plugin module
-plugin_name = "Octoprint-FilamentReload"
+plugin_name = "Octoprint-Filament-Adevance"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
 plugin_version = "1.0.1"
@@ -21,19 +21,19 @@ plugin_version = "1.0.1"
 plugin_description = """A revamped and rewritten filament monitor that pauses the print when your filament runs out"""
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
-plugin_author = "Connor Huffine"
+plugin_author = "Stegano Finocchiaro"
 
 # The plugin's author's mail address.
-plugin_author_email = "chuffine@gmail.com"
+plugin_author_email = "stefanuc111@gmail.com"
 
 # The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
-plugin_url = "https://github.com/kontakt/Octoprint-Filament-Reloaded"
+plugin_url = "https://github.com/stefanuc111/Octoprint-Filament-Reloaded"
 
 # The plugin's license. Can be overwritten within OctoPrint's internal data via __plugin_license__ in the plugin module
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ['RPi.GPIO']
+plugin_requires = []
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point
