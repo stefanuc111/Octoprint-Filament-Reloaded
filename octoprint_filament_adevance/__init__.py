@@ -20,9 +20,6 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         self.pin = int(self._settings.get(["pin"]))
         self.left_offset = int(self._settings.get(["left_offset"]))
         self.switch = int(self._settings.get(["switch"]))
-
-        self.timer = RepeatedTimer(1.0, self.check_gpio)
-        
         self.position = None
 
         if self.pin != -1:   # If a pin is defined
@@ -38,6 +35,14 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             direction = open("/sys/class/gpio/gpio" + str(self.pin) + "/direction","w")
             direction.write("in")
             direction.close()
+
+    def start_timer(self):
+        self.stop_timer();
+        self.timer = RepeatedTimer(1.0, self.check_gpio)
+        self.timer.start();
+
+    def stop_timer(self):
+        self.timer.cancel();
 
     def get_pin_state(self):
         gpio_pin = open("/sys/class/gpio/gpio" + str(self.pin) + "/value","r")
@@ -58,16 +63,16 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
 
     def on_event(self, event, payload):
         if event == Events.PRINT_PAUSED:
-            self.position = payload.position
+            self.position = payload['position']
 
         if event == Events.PRINT_STARTED:  # If a new print is beginning
             self._logger.info("Printing started: Filament sensor enabled")
             if self.pin != -1:
-                self.timer.start();
+                self.start_timer();
         elif event in (Events.PRINT_DONE, Events.PRINT_FAILED, Events.PRINT_CANCELLED):
             self._logger.info("Printing stopped: Filament sensor disabled")
             try:
-                self.timer.cancel();
+                self.stop_timer();
             except Exception:
                 pass
 
@@ -120,7 +125,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.3"
+__plugin_version__ = "1.0.4"
 
 def __plugin_load__():
     global __plugin_implementation__
