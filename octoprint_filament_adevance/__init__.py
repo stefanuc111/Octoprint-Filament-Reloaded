@@ -43,7 +43,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
 
     def stop_timer(self):
         try:
-        self.timer.cancel();
+            self.timer.cancel();
         except:
             pass
 
@@ -128,7 +128,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.5"
+__plugin_version__ = "1.0.6"
 
 def __plugin_load__():
     global __plugin_implementation__
