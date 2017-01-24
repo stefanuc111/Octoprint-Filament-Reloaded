@@ -73,7 +73,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
 
     def check_gpio(self):
         state = self.get_pin_state()
-        self._logger.debug("Detected sensor [%s] state [%s]"%(channel, state))
+        self._logger.debug("Detected sensor state [%s]"%(state))
         if state != self.switch:    # If the sensor is tripped
             self._logger.debug("Sensor [%s]"%state)
             if self._printer.is_printing():
