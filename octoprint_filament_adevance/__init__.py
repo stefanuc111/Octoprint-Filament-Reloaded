@@ -42,7 +42,10 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         self.timer.start();
 
     def stop_timer(self):
+        try:
         self.timer.cancel();
+        except:
+            pass
 
     def get_pin_state(self):
         gpio_pin = open("/sys/class/gpio/gpio" + str(self.pin) + "/value","r")
@@ -125,7 +128,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.4"
+__plugin_version__ = "1.0.5"
 
 def __plugin_load__():
     global __plugin_implementation__
