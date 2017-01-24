@@ -18,7 +18,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
     def on_after_startup(self):
         self._logger.info("Filament Sensor Adevance started")
         self.pin = int(self._settings.get(["pin"]))
-        self.bounce = int(self._settings.get(["bounce"]))
+        self.left_offset = int(self._settings.get(["left_offset"]))
         self.switch = int(self._settings.get(["switch"]))
 
         self.timer = RepeatedTimer(1.0, self.check_gpio)
@@ -49,7 +49,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
     def get_settings_defaults(self):
         return dict(
             pin     = -1,   # Default is no pin
-            bounce  = 250,  # Debounce 250ms
+            left_offset  = 40,  # Offset mm from left, where to place when paused
             switch  = 0    # Normally Open
         )
 
@@ -92,11 +92,11 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         if script_name == "afterPrintPaused":
             postfix = ( "M117 Filament ended\n"
                         "M104 S0\n"
-                        "G1 X" + str(-self.position.x - 40) + "\n" )
+                        "G1 X" + str(-self.position.x - self.left_offset) + "\n" )
 
         if script_name == "beforePrintResumed":
             postfix = ( "M117 Resumed\n"
-                    "G1 X" + str(self.position.x + 40) + "\n" )
+                    "G1 X" + str(self.position.x + self.left_offset) + "\n" )
             self.position = None
 
         return prefix, postfix
