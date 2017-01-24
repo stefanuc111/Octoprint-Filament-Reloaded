@@ -120,7 +120,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.2"
+__plugin_version__ = "1.0.3"
 
 def __plugin_load__():
     global __plugin_implementation__
