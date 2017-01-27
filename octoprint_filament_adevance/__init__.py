@@ -5,6 +5,7 @@ import octoprint.plugin
 from octoprint.events import eventManager, Events
 from flask import jsonify, make_response
 from octoprint.util import RepeatedTimer
+import threading
 
 class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.EventHandlerPlugin,
@@ -32,16 +33,25 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             except:
 	            pass
 
-            direction = open("/sys/class/gpio/gpio" + str(self.pin) + "/direction","w")
-            direction.write("in")
-            direction.close()
+            t = threading.Timer(1.0, self.init_direction)
+            t.start()  # after 30 seconds, "hello, world" will be printed   
+
+
+    def init_direction(self):
+        self._logger.info("Initializing filament sensor direction")
+        direction = open("/sys/class/gpio/gpio" + str(self.pin) + "/direction","w")
+        direction.write("in")
+        direction.close()
+   
 
     def start_timer(self):
+        self._logger.info("Printing started: Filament sensor enabled")
         self.stop_timer();
         self.timer = RepeatedTimer(1.0, self.check_gpio)
         self.timer.start();
 
     def stop_timer(self):
+        self._logger.info("Printing stopped: Filament sensor disabled")
         try:
             self.timer.cancel();
         except:
@@ -69,15 +79,10 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             self.position = payload['position']
 
         if event == Events.PRINT_STARTED:  # If a new print is beginning
-            self._logger.info("Printing started: Filament sensor enabled")
             if self.pin != -1:
                 self.start_timer();
         elif event in (Events.PRINT_DONE, Events.PRINT_FAILED, Events.PRINT_CANCELLED):
-            self._logger.info("Printing stopped: Filament sensor disabled")
-            try:
-                self.stop_timer();
-            except Exception:
-                pass
+            self.stop_timer();
 
     def check_gpio(self):
         state = self.get_pin_state()
@@ -130,7 +135,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.8"
+__plugin_version__ = "1.0.9"
 
 def __plugin_load__():
     global __plugin_implementation__
