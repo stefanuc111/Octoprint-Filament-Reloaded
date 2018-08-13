@@ -14,14 +14,14 @@ plugin_package = "octoprint_filament_adevance"
 plugin_name = "Octoprint-Filament-Adevance"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "1.0.9"
+plugin_version = "1.0.10"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
 plugin_description = """A revamped and rewritten filament monitor that pauses the print when your filament runs out"""
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
-plugin_author = "Stegano Finocchiaro"
+plugin_author = "Stefano Finocchiaro"
 
 # The plugin's author's mail address.
 plugin_author_email = "stefanuc111@gmail.com"

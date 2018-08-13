@@ -93,7 +93,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
                 self._printer.toggle_pause_print()
 
     def on_print_paused_hook(self, comm, script_type, script_name, *args, **kwargs):
-        if not script_type == "gcode" or not script_name == "afterPrintPaused":
+        if not script_type == "gcode":
             return None
 
         if self.position == None:
@@ -106,11 +106,12 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             postfix = ( "M117 Filament ended\n"
                         "M104 S0\n"
                         "M84 S0\n"
-                        "G0 X" + str(-self.position['x'] - self.left_offset) + "\n" )
+                        "G0 F1500 X" + str(-self.position['x'] - self.left_offset) + "\n" )
 
         if script_name == "beforePrintResumed":
             postfix = ( "M117 Resumed\n"
-                    "G0 X" + str(self.position['x'] + self.left_offset) + "\n"
+                    "G1 E" + str(20 + self.position['e']) + " F1000 X" + str(self.position['x'] + self.left_offset) + "\n"
+                    "G92 E" + str(self.position['e']) + "\n"
                     "M84 S120\n" )
             self.position = None
 
