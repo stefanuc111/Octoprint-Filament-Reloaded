@@ -110,7 +110,8 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
 
         if script_name == "beforePrintResumed":
             postfix = ( "M117 Resumed\n"
-                    "G1 E" + str(20 + self.position['e']) + " F1000 X" + str(self.position['x'] + self.left_offset) + "\n"
+                    "G1 F400 E"+ str(10 + self.position['e']) +"\n"
+                    "G1 F2500 X" + str(self.position['x'] + self.left_offset) + "\n"
                     "G92 E" + str(self.position['e']) + "\n"
                     "M84 S120\n" )
             self.position = None
