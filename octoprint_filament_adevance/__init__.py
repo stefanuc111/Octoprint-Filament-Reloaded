@@ -19,7 +19,6 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
     def on_after_startup(self):
         self._logger.info("Filament Sensor Adevance started")
         self.pin = int(self._settings.get(["pin"]))
-        self.left_offset = int(self._settings.get(["left_offset"]))
         self.switch = int(self._settings.get(["switch"]))
 
         if self.pin != -1:   # If a pin is defined
@@ -68,7 +67,6 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             pin     = -1,   # Default is no pin
             no_filament_gcode = '',
             pause_print = True,
-            left_offset  = 40,  # Offset mm from left, where to place when paused
             switch  = 0    # Normally Open
         )
 
@@ -112,7 +110,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.9"
+__plugin_version__ = "1.0.13"
 
 def __plugin_load__():
     global __plugin_implementation__

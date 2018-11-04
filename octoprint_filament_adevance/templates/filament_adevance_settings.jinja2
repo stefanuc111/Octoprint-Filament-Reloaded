@@ -9,13 +9,6 @@ Define the pin used by your sensor and the debounce timing for false positive pr
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">{{ _('Left offset position(mm):') }}</label>
-        <div class="controls" data-toggle="tooltip" title="{{ _('When paused the position of the head will go to the 0 X position mius the offset') }}">
-            <input type="number" step="any" class="input-mini text-right" data-bind="value: settings.plugins.filament_adevance.left_offset">
-            <span class="add-on">mm</span>
-        </div>
-    </div>
-    <div class="control-group">
         <label class="control-label">{{ _('Switch Type:') }}</label>
         <div class="controls" data-toggle="tooltip" title="{{ _('Whether the sensor should trip when the switch goes HIGH or LOW, Normally Open is LOW when filament is present, and Normally Closed is HIGH when filament is present') }}">
             <select class="select-mini" data-bind="value: settings.plugins.filament_adevance.switch">
