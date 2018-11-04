@@ -21,7 +21,6 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         self.pin = int(self._settings.get(["pin"]))
         self.left_offset = int(self._settings.get(["left_offset"]))
         self.switch = int(self._settings.get(["switch"]))
-        self.position = None
 
         if self.pin != -1:   # If a pin is defined
             self._logger.info("Filament Sensor active on GPIO Pin [%s]"%self.pin)
@@ -67,6 +66,8 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
     def get_settings_defaults(self):
         return dict(
             pin     = -1,   # Default is no pin
+            no_filament_gcode = '',
+            pause_print = True,
             left_offset  = 40,  # Offset mm from left, where to place when paused
             switch  = 0    # Normally Open
         )
@@ -75,9 +76,6 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         return [dict(type="settings", custom_bindings=False)]
 
     def on_event(self, event, payload):
-        if event == Events.PRINT_PAUSED:
-            self.position = payload['position']
-
         if event == Events.PRINT_STARTED:  # If a new print is beginning
             if self.pin != -1:
                 self.start_timer();
@@ -90,34 +88,11 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         if state != self.switch:    # If the sensor is tripped
             self._logger.debug("Sensor [%s]"%state)
             if self._printer.is_printing():
-                self._printer.toggle_pause_print()
-
-    def on_print_paused_hook(self, comm, script_type, script_name, *args, **kwargs):
-        if not script_type == "gcode":
-            return None
-
-        if self.position == None:
-            return None
-
-        prefix = None
-        postfix = None
-        
-        if script_name == "afterPrintPaused":
-            postfix = ( "M117 Filament ended\n"
-                        "M104 S0\n"
-                        "M84 S0\n"
-                        "G0 F1500 X" + str(-self.position['x'] - self.left_offset) + "\n" )
-
-        if script_name == "beforePrintResumed":
-            postfix = ( "M117 Resumed\n"
-                    "G1 F400 E"+ str(10 + self.position['e']) +"\n"
-                    "G1 F2500 X" + str(self.position['x'] + self.left_offset) + "\n"
-                    "G92 E" + str(self.position['e']) + "\n"
-                    "M84 S120\n" )
-            self.position = None
-
-        return prefix, postfix
-
+                if self.pause_print:
+                    self._printer.toggle_pause_print()
+                if self.no_filament_gcode:
+                    self._logger.info("Sending out of filament GCODE")
+                    self._printer.commands(self.no_filament_gcode)
 
     def get_update_information(self):
         return dict(
