@@ -12,14 +12,29 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.TemplatePlugin,
                              octoprint.plugin.SettingsPlugin):
 
+    @property
+    def no_filament_gcode(self):
+         return str(self._settings.get(["no_filament_gcode"])).splitlines()
+
+    @property
+    def pause_print(self):
+        return self._settings.get_boolean(["pause_print"])
+
+    @property
+    def switch(self):
+        return int(self._settings.get(["switch"]))
+
+    @property
+    def pin(self):
+        return int(self._settings.get(["pin"]))
+
     def initialize(self):
         return
 
 
     def on_after_startup(self):
         self._logger.info("Filament Sensor Adevance started")
-        self.pin = int(self._settings.get(["pin"]))
-        self.switch = int(self._settings.get(["switch"]))
+        self.last_state = None
 
         if self.pin != -1:   # If a pin is defined
             self._logger.info("Filament Sensor active on GPIO Pin [%s]"%self.pin)
@@ -43,15 +58,15 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
    
 
     def start_timer(self):
-        self._logger.info("Printing started: Filament sensor enabled")
-        self.stop_timer();
+        self.stop_timer()
         self.timer = RepeatedTimer(1.0, self.check_gpio)
-        self.timer.start();
+        self.timer.start()
+        self._logger.info("Printing started: Filament sensor enabled")
 
     def stop_timer(self):
-        self._logger.info("Printing stopped: Filament sensor disabled")
         try:
-            self.timer.cancel();
+            self.timer.cancel()
+            self._logger.info("Printing stopped: Filament sensor disabled")
         except:
             pass
 
@@ -74,6 +89,8 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         return [dict(type="settings", custom_bindings=False)]
 
     def on_event(self, event, payload):
+        if event == Events.PRINT_RESUMED:
+            self.last_state = None
         if event == Events.PRINT_STARTED:  # If a new print is beginning
             if self.pin != -1:
                 self.start_timer();
@@ -81,16 +98,22 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
             self.stop_timer();
 
     def check_gpio(self):
-        state = self.get_pin_state()
-        self._logger.debug("Detected sensor state [%s]"%(state))
-        if state != self.switch:    # If the sensor is tripped
-            self._logger.debug("Sensor [%s]"%state)
-            if self._printer.is_printing():
-                if self.pause_print:
-                    self._printer.toggle_pause_print()
-                if self.no_filament_gcode:
-                    self._logger.info("Sending out of filament GCODE")
-                    self._printer.commands(self.no_filament_gcode)
+        try:
+            self._logger.debug("Check_gpio called")
+            state = self.get_pin_state()
+            self._logger.debug("Detected sensor state [%s]"%(state))
+            if state != self.switch and self.last_state != state:    # If the sensor is tripped
+                self.last_state = state
+                self._logger.debug("Sensor triggered! state: [%s]"%state)
+                if self._printer.is_printing():
+                    if self.pause_print:
+                        self._printer.toggle_pause_print()
+                    if self.no_filament_gcode:
+                        self._logger.info("Sending out of filament GCODE")
+                        self._printer.commands(self.no_filament_gcode)
+        except Exception as e:
+            self._logger.debug(str(e))
+            
 
     def get_update_information(self):
         return dict(
@@ -110,7 +133,7 @@ class FilamentReloadedPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "Filament Sensor Adevance"
-__plugin_version__ = "1.0.13"
+__plugin_version__ = "1.0.20"
 
 def __plugin_load__():
     global __plugin_implementation__
@@ -118,5 +141,4 @@ def __plugin_load__():
 
     global __plugin_hooks__
     __plugin_hooks__ = {
-        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-        "octoprint.comm.protocol.scripts": __plugin_implementation__.on_print_paused_hook}
+        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information}
